@@ -1,0 +1,873 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b0d0f">
+  <title>Arms & Eras — A visual history of firearms</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --paper: #0b0d0f;
+      --paper-deep: #171a1e;
+      --ink: #f2f3f4;
+      --muted: #a1a6ab;
+      --green: #e2e5e8;
+      --green-dark: #cbd0d4;
+      --orange: #b7bdc3;
+      --line: #30343a;
+      --white: #15181c;
+      --serif: Georgia, "Times New Roman", serif;
+      --sans: "Segoe UI", Arial, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: var(--sans);
+      line-height: 1.5;
+    }
+    a { color: inherit; }
+    button, input { font: inherit; }
+    button:focus-visible, a:focus-visible, input:focus-visible {
+      outline: 3px solid var(--orange);
+      outline-offset: 3px;
+    }
+    .shell { width: min(1180px, calc(100% - 48px)); margin-inline: auto; }
+    .topbar {
+      height: 76px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--line);
+    }
+    .brand {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 750;
+      letter-spacing: .04em;
+    }
+    .brand-copy { display: flex; flex-direction: column; gap: 1px; }
+    .brand-byline {
+      color: var(--muted);
+      font-size: 9px;
+      font-weight: 500;
+      letter-spacing: .02em;
+    }
+    .brand-idea { margin-left: .25em; }
+    .brand-mark {
+      width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      background: var(--green);
+      color: var(--white);
+      border-radius: 50%;
+      font-family: var(--serif);
+      font-size: 18px;
+    }
+    .nav { display: flex; align-items: center; gap: 30px; }
+    .nav a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .nav a:hover { color: var(--ink); }
+    .nav .nav-cta {
+      border: 1px solid var(--line);
+      border-radius: 99px;
+      padding: 9px 15px;
+      color: var(--ink);
+    }
+
+    .hero {
+      min-height: 480px;
+      display: grid;
+      grid-template-columns: 1.03fr .97fr;
+      align-items: center;
+      gap: 42px;
+      padding-block: 60px;
+    }
+    .eyebrow {
+      display: inline-flex;
+      gap: 10px;
+      align-items: center;
+      color: var(--orange);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: .17em;
+      text-transform: uppercase;
+    }
+    .eyebrow::before { content: ""; width: 25px; height: 1px; background: currentColor; }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 {
+      max-width: 600px;
+      margin: 21px 0 19px;
+      font: 500 clamp(47px, 6.1vw, 78px)/.99 var(--serif);
+      letter-spacing: -.055em;
+    }
+    h1 em { color: var(--green); font-weight: 400; }
+    .hero-copy {
+      max-width: 480px;
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.75;
+    }
+    .hero-actions { display: flex; gap: 12px; align-items: center; margin-top: 28px; }
+    .button {
+      min-height: 46px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      padding: 0 18px;
+      border: 1px solid var(--green);
+      border-radius: 3px;
+      background: var(--green);
+      color: white;
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .button:hover { background: var(--green-dark); }
+    .button.secondary { background: transparent; color: var(--green); }
+    .button.secondary:hover { background: var(--paper-deep); }
+    .hero-art {
+      position: relative;
+      min-height: 420px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 8px;
+      overflow: hidden;
+      padding: 18px 20px 15px;
+      background: #d9d8ca;
+      border-radius: 2px;
+    }
+    .hero-art::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      opacity: .36;
+      pointer-events: none;
+      background:
+        linear-gradient(135deg, transparent 49.8%, #b9bbaa 50%, transparent 50.2%),
+        linear-gradient(45deg, transparent 49.8%, #b9bbaa 50%, transparent 50.2%);
+      background-size: 46px 46px;
+    }
+    .art-topline, .art-footer, .exhibit-controls, .part-controls, .part-description {
+      position: relative;
+      z-index: 1;
+    }
+    .art-topline { display: flex; justify-content: space-between; align-items: flex-start; gap: 15px; }
+    .art-label {
+      color: #4d5b50;
+      font: italic 11px var(--serif);
+      text-align: right;
+    }
+    .art-index {
+      color: #59675d;
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: .15em;
+    }
+    .hero-note {
+      max-width: 110px;
+      color: #536258;
+      font: italic 11px/1.4 var(--serif);
+      text-align: right;
+    }
+    .artifact {
+      position: relative;
+      z-index: 1;
+      display: block;
+      width: 100%;
+      min-height: 128px;
+      max-height: 172px;
+      flex: 1 1 auto;
+      overflow: visible;
+    }
+    .artifact .outer-part { transition: opacity .25s, fill .25s, stroke .25s; }
+    .hero-art[data-view="exterior"] .outer-part { opacity: 1; }
+    .hero-art[data-view="transparent"] .outer-part { opacity: .37; }
+    .artifact .part-selected { filter: drop-shadow(0 0 4px #b55d3d); }
+    .artifact .part-selected.outer-part { opacity: .82; }
+    .exhibit-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+    .view-switch { display: inline-flex; gap: 3px; padding: 3px; background: rgb(243 240 232 / 85%); }
+    .view-button, .part-button {
+      border: 1px solid transparent;
+      background: transparent;
+      color: #46564c;
+      cursor: pointer;
+      font-size: 10px;
+      font-weight: 700;
+    }
+    .view-button { padding: 6px 9px; }
+    .view-button[aria-pressed="true"] { background: var(--green); color: white; }
+    .part-controls { display: flex; flex-wrap: wrap; gap: 5px; }
+    .part-button {
+      padding: 5px 7px;
+      border-color: rgb(70 86 76 / 35%);
+      background: rgb(243 240 232 / 72%);
+    }
+    .part-button:hover, .part-button[aria-pressed="true"] { border-color: var(--orange); color: #773b27; }
+    .part-description {
+      min-height: 34px;
+      margin: 0;
+      color: #46564c;
+      font-size: 10px;
+      line-height: 1.4;
+    }
+    .part-description strong { color: var(--ink); }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      border-block: 1px solid var(--line);
+    }
+    .stat { padding: 19px 22px 19px 0; }
+    .stat + .stat { padding-left: 25px; border-left: 1px solid var(--line); }
+    .stat strong { display: block; font: 500 25px var(--serif); }
+    .stat span { color: var(--muted); font-size: 11px; }
+
+    .collection { padding: 85px 0 92px; }
+    .section-head {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 28px;
+      margin-bottom: 30px;
+    }
+    .section-head h2 {
+      margin: 12px 0 0;
+      font: 500 clamp(34px, 4vw, 48px)/1.05 var(--serif);
+      letter-spacing: -.035em;
+    }
+    .section-head p { max-width: 340px; margin: 0; color: var(--muted); font-size: 13px; }
+    .filters {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+    .filter-list { display: flex; flex-wrap: wrap; gap: 7px; }
+    .filter {
+      padding: 8px 12px;
+      border: 1px solid var(--line);
+      border-radius: 99px;
+      background: transparent;
+      color: var(--muted);
+      font-size: 11px;
+      cursor: pointer;
+    }
+    .filter[aria-pressed="true"] { border-color: var(--green); background: var(--green); color: white; }
+    .search-wrap { position: relative; }
+    .search-wrap::before {
+      content: "⌕";
+      position: absolute;
+      left: 12px;
+      top: 5px;
+      color: var(--muted);
+      font-size: 20px;
+    }
+    .search {
+      width: 205px;
+      height: 36px;
+      padding: 0 12px 0 34px;
+      border: 1px solid var(--line);
+      border-radius: 2px;
+      background: var(--white);
+      color: var(--ink);
+      font-size: 12px;
+    }
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+    .card {
+      min-width: 0;
+      padding: 14px;
+      border: 1px solid var(--line);
+      background: rgb(251 250 246 / 66%);
+      transition: transform .2s, border-color .2s, box-shadow .2s;
+    }
+    .card:hover {
+      transform: translateY(-3px);
+      border-color: #a9ad9e;
+      box-shadow: 0 10px 22px rgb(29 41 36 / 7%);
+    }
+    .card[hidden] { display: none; }
+    .card-image {
+      position: relative;
+      height: 145px;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      background: var(--paper-deep);
+    }
+    .card-image::after {
+      content: "";
+      position: absolute;
+      width: 78%;
+      height: 1px;
+      bottom: 27px;
+      background: rgb(70 78 67 / 23%);
+    }
+    .weapon-art {
+      display: block;
+      width: 91%;
+      max-height: 104px;
+      overflow: visible;
+      filter: drop-shadow(0 6px 3px rgb(29 41 36 / 18%));
+    }
+    .weapon-wood { fill: #98724e; stroke: #51402f; stroke-width: 5; stroke-linejoin: round; }
+    .weapon-metal { fill: #58655d; stroke: #2c3932; stroke-width: 5; stroke-linejoin: round; }
+    .weapon-detail { fill: none; stroke: #37443c; stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; }
+    .weapon-highlight { fill: none; stroke: #c1a17c; stroke-width: 3; stroke-linecap: round; opacity: .72; }
+    .card-no {
+      position: absolute;
+      top: 10px;
+      left: 11px;
+      z-index: 1;
+      color: #6f786f;
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: .12em;
+    }
+    .period {
+      position: absolute;
+      right: 10px;
+      bottom: 8px;
+      z-index: 1;
+      padding: 4px 7px;
+      background: var(--paper);
+      color: var(--green);
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+    }
+    .card-body { padding: 15px 2px 3px; }
+    .card-meta {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      color: var(--muted);
+      font-size: 10px;
+    }
+    .card h3 { margin: 8px 0 6px; font: 500 21px var(--serif); }
+    .card p { min-height: 40px; margin: 0; color: var(--muted); font-size: 12px; line-height: 1.6; }
+    .card-link {
+      display: inline-flex;
+      gap: 6px;
+      align-items: center;
+      margin-top: 13px;
+      color: var(--green);
+      text-decoration: none;
+      font-size: 11px;
+      font-weight: 750;
+    }
+    .card-link:hover { color: var(--orange); }
+    .history {
+      margin-top: 12px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 11px;
+    }
+    .history summary {
+      padding-top: 10px;
+      color: var(--green);
+      font-size: 11px;
+      font-weight: 750;
+      cursor: pointer;
+    }
+    .history p { min-height: 0; margin: 9px 0 7px; line-height: 1.6; }
+    .history a { color: var(--green); font-weight: 650; }
+    .history-source { color: var(--muted); font-size: 10px; }
+    .no-results { display: none; padding: 30px 0; color: var(--muted); font-size: 14px; }
+
+    .timeline-band { background: var(--green-dark); color: var(--white); }
+    .timeline-inner {
+      display: grid;
+      grid-template-columns: .75fr 1.25fr;
+      gap: 62px;
+      align-items: center;
+      padding-block: 58px;
+    }
+    .timeline-inner .eyebrow { color: #d18a68; }
+    .timeline-inner h2 { margin: 13px 0 11px; font: 500 36px/1.08 var(--serif); }
+    .timeline-inner p { max-width: 280px; margin: 0; color: #c3cbc4; font-size: 12px; }
+    .timeline {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      position: relative;
+      padding-top: 24px;
+    }
+    .timeline::before {
+      content: "";
+      position: absolute;
+      top: 30px;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: #718076;
+    }
+    .timepoint { position: relative; padding-right: 12px; }
+    .timepoint::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 11px;
+      height: 11px;
+      border: 2px solid #d18a68;
+      border-radius: 50%;
+      background: var(--green-dark);
+    }
+    .timepoint strong { display: block; padding-top: 22px; font: 500 17px var(--serif); }
+    .timepoint span { display: block; margin-top: 5px; color: #bac4bc; font-size: 10px; line-height: 1.4; }
+
+    .footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 25px;
+      padding-block: 22px;
+      color: var(--muted);
+      font-size: 10px;
+    }
+    .footer strong { color: var(--ink); }
+    .notice {
+      max-width: 530px;
+      padding-left: 14px;
+      border-left: 2px solid var(--orange);
+    }
+
+    @media (max-width: 760px) {
+      .shell { width: min(100% - 32px, 580px); }
+      .topbar { height: 64px; }
+      .nav { gap: 13px; }
+      .nav a { font-size: 11px; }
+      .nav a:nth-child(2) { display: none; }
+      .nav .nav-cta { padding: 7px 10px; }
+      .hero { grid-template-columns: 1fr; gap: 28px; padding-block: 48px; }
+      .hero-art { min-height: 390px; }
+      .stats { margin-top: 8px; }
+      .collection { padding: 65px 0; }
+      .section-head { display: block; }
+      .section-head p { margin-top: 15px; }
+      .filters { align-items: flex-start; flex-direction: column; }
+      .search, .search-wrap { width: 100%; }
+      .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+      .card { padding: 10px; }
+      .card-image { height: 120px; }
+      .card h3 { font-size: 18px; }
+      .card p { min-height: 55px; font-size: 11px; }
+      .timeline-inner { grid-template-columns: 1fr; gap: 30px; padding-block: 45px; }
+      .timeline-inner p { max-width: 400px; }
+      .footer { align-items: flex-start; flex-direction: column; }
+    }
+    @media (max-width: 420px) {
+      .brand { gap: 8px; font-size: 11px; }
+      .brand-mark { width: 30px; height: 30px; }
+      .nav a:first-child { display: none; }
+      .hero-art { padding-inline: 14px; }
+      .exhibit-controls { align-items: flex-start; flex-direction: column; }
+      .stats { grid-template-columns: 1fr 1fr; }
+      .stat:last-child { display: none; }
+      .stat { padding: 16px 10px 16px 0; }
+      .stat + .stat { padding-left: 14px; }
+      .cards { grid-template-columns: 1fr; }
+      .card { display: grid; grid-template-columns: 40% 1fr; gap: 12px; }
+      .card-image { height: 100%; min-height: 132px; }
+      .card-body { padding-top: 5px; }
+      .card p { min-height: 0; }
+      .card-link { margin-top: 9px; }
+      .timeline { grid-template-columns: 1fr; gap: 14px; padding: 0 0 0 18px; }
+      .timeline::before { top: 6px; bottom: 5px; left: 4px; right: auto; width: 1px; height: auto; }
+      .timepoint { padding: 0; }
+      .timepoint::before { top: 4px; left: -18px; width: 9px; height: 9px; }
+      .timepoint strong { display: inline; padding: 0; margin-right: 8px; font-size: 15px; }
+      .timepoint span { display: inline; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; }
+    }
+
+    :root {
+      --muted: #b9bec4;
+      --line: #383d43;
+      --paper-deep: #171a1e;
+      --ink: #f3f4f5;
+      --green: #e0e3e6;
+      --green-dark: #cbd0d5;
+      --orange: #c5cbd1;
+      --white: #15181c;
+    }
+    body { background: #0b0d0f; color: var(--ink); }
+    .brand-mark, .button, .view-button[aria-pressed="true"], .filter[aria-pressed="true"] {
+      color: #111315;
+    }
+    .hero-art {
+      background: #171a1e;
+      border: 1px solid #343940;
+    }
+    .hero-art::before {
+      opacity: .32;
+      background:
+        linear-gradient(135deg, transparent 49.8%, #3a4047 50%, transparent 50.2%),
+        linear-gradient(45deg, transparent 49.8%, #3a4047 50%, transparent 50.2%);
+    }
+    .art-label, .art-index, .hero-note, .view-button, .part-button, .part-description {
+      color: #d0d4d8;
+    }
+    .part-button { border-color: #70767d; background: #171a1e; }
+    .part-button:hover, .part-button[aria-pressed="true"] {
+      border-color: #f3f4f5;
+      color: #fff;
+    }
+    .view-switch { border: 1px solid #444a51; background: #101215; }
+    .button:hover { background: #c5cbd1; }
+    .button.secondary { color: #edf0f2; }
+    .button.secondary:hover { background: #202429; }
+    .hero-art, .weapon-art { color: #e1e4e7; }
+    .artifact, .weapon-art { filter: grayscale(1); }
+    .artifact .part-selected { filter: drop-shadow(0 0 4px #fff); }
+    .card { background: #111417; }
+    .card-image { background: #1b1f23; }
+    .card-image::after { background: rgb(225 229 233 / 30%); }
+    .card-image::before {
+      content: "";
+      position: absolute;
+      z-index: 0;
+      inset: 18% 12%;
+      border-radius: 50%;
+      background: radial-gradient(ellipse, rgb(235 238 241 / 19%), transparent 72%);
+      opacity: 0;
+      transform: scale(.8);
+      transition: opacity .45s ease, transform .55s cubic-bezier(.2, .75, .25, 1);
+    }
+    .weapon-art {
+      position: relative;
+      z-index: 1;
+      filter: grayscale(1) drop-shadow(0 6px 4px rgb(0 0 0 / 45%));
+    }
+    .card:hover .weapon-art, .card:focus-within .weapon-art {
+      transform: translateY(-5px) scale(1.06);
+      filter: grayscale(1) drop-shadow(0 8px 9px rgb(255 255 255 / 25%));
+    }
+    .card:hover .card-image::before, .card:focus-within .card-image::before {
+      opacity: 1;
+      transform: scale(1);
+    }
+    .hero-art:hover .artifact { transform: translateY(-4px); }
+    .card:hover { border-color: #858c93; }
+    .filter[aria-pressed="true"] {
+      border-color: #e0e3e6;
+      background: #e0e3e6;
+    }
+    .timeline-band { background: #15181c; color: #f3f4f5; }
+    .timeline-inner .eyebrow { color: #d5d9dd; }
+    .timeline-inner p, .timepoint span { color: #c3c8cd; }
+    .timeline::before { background: #666d74; }
+    .timepoint::before { border-color: #e0e3e6; background: #15181c; }
+    .notice { border-color: #aeb4ba; }
+    a:hover { color: #fff; }
+    a, button, input, .card, .card-image, .weapon-art, .artifact, .artifact .outer-part, .part-button, .view-button, .filter, .history summary {
+      transition:
+        color .2s ease,
+        background-color .2s ease,
+        border-color .2s ease,
+        box-shadow .35s ease,
+        transform .42s cubic-bezier(.2, .75, .25, 1),
+        filter .25s ease,
+        opacity .25s ease;
+    }
+    .nav a { display: inline-flex; align-items: center; }
+    .card:hover .weapon-art { transform: scale(1.035); }
+    .history summary:hover { color: #fff; }
+    .button:hover, .button:focus-visible, .filter:hover, .filter:focus-visible,
+    .part-button:hover, .part-button:focus-visible, .view-button:hover, .view-button:focus-visible,
+    .nav a:hover, .nav a:focus-visible, .card-link:hover, .card-link:focus-visible,
+    .history summary:hover, .history summary:focus-visible {
+      transform: translateY(-3px);
+    }
+    .button:active, .filter:active, .part-button:active, .view-button:active,
+    .nav a:active, .card-link:active {
+      transform: translateY(-1px);
+    }
+    .card:hover {
+      border-color: #fff;
+      box-shadow: 0 0 0 1px #fff, 0 14px 32px rgb(0 0 0 / 38%);
+    }
+    :is(a, button, input, summary):hover {
+      outline: 1px solid #fff;
+      outline-offset: 3px;
+    }
+    :is(a, button, input, summary):focus-visible {
+      outline: 2px solid #fff;
+      outline-offset: 3px;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        scroll-behavior: auto !important;
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .01ms !important;
+        transition-delay: 0ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="shell topbar">
+    <a class="brand" href="#" aria-label="Arms and Eras home">
+      <span class="brand-mark" aria-hidden="true">A</span>
+      <span class="brand-copy">
+        <span>ARMS <span style="color:#b55d3d">&</span> ERAS</span>
+        <span class="brand-byline">By a 13-year-old with <span class="brand-idea">an idea.</span></span>
+      </span>
+    </a>
+    <nav class="nav" aria-label="Main navigation">
+      <a href="#collection">Explore collection</a>
+      <a href="#timeline">Timeline</a>
+      <a class="nav-cta" href="#about">About the project <span aria-hidden="true">↗</span></a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="shell hero" aria-labelledby="hero-title">
+      <div>
+        <span class="eyebrow">A visual history · 1914 to today</span>
+        <h1 id="hero-title">The stories behind the <em>small arms</em> of war.</h1>
+        <p class="hero-copy">Explore how firearms changed across a century of conflict—and how technology, industry and history shaped the objects carried by soldiers.</p>
+        <div class="hero-actions">
+          <a class="button" href="#collection">Explore the collection <span aria-hidden="true">↓</span></a>
+          <a class="button secondary" href="#timeline">View timeline</a>
+        </div>
+      </div>
+      <div class="hero-art" data-view="transparent">
+        <div class="art-topline">
+          <span class="art-index">FIELD NOTE No. 001 · LEE–ENFIELD</span>
+          <span class="hero-note">Objects tell stories.<br>Context matters.</span>
+        </div>
+        <svg class="artifact" viewBox="0 0 800 230" role="img" aria-labelledby="cutaway-title cutaway-desc">
+          <title id="cutaway-title">Illustrative Lee–Enfield Mk III side profile</title>
+          <desc id="cutaway-desc">A simplified historical profile of the Lee–Enfield Mk III. Select a visible part below to highlight it.</desc>
+          <g data-part="stock" class="outer-part">
+            <path d="M52 94 L161 94 L183 104 L352 104 L367 113 L370 145 L350 154 L82 158 L55 144 Z" fill="#96714e" stroke="#4c493b" stroke-width="5" stroke-linejoin="round"/>
+            <path d="M77 106 L158 106 L179 115 L224 115 M88 144 L222 143 M224 108 L347 108 L354 116 L352 137" fill="none" stroke="#c3a079" stroke-width="3" opacity=".65"/>
+          </g>
+          <g data-part="barrel" class="outer-part">
+            <path d="M451 79 L744 79 L760 85 L760 96 L451 96 Z" fill="#506057" stroke="#27382f" stroke-width="4" stroke-linejoin="round"/>
+            <path d="M478 85 L748 85 M736 78 L736 98" stroke="#a0aaa0" stroke-width="2" opacity=".7"/>
+          </g>
+          <g data-part="receiver" class="outer-part">
+            <path d="M350 87 L370 78 L447 78 L463 87 L459 125 L447 137 L365 136 L352 128 Z" fill="#66736a" stroke="#293a31" stroke-width="5" stroke-linejoin="round"/>
+            <path d="M369 88 L438 88 L442 119 L367 119 Z" fill="#3a4b41" opacity=".7"/>
+          </g>
+          <g data-part="magazine" class="outer-part">
+            <path d="M403 133 L438 136 L434 165 Q429 172 416 167 L405 158 Z" fill="#526057" stroke="#293a31" stroke-width="4" stroke-linejoin="round"/>
+            <path d="M410 142 L431 145 M409 151 L430 154" fill="none" stroke="#a0aaa0" stroke-width="2" opacity=".7"/>
+          </g>
+          <g data-part="receiver" class="outer-part">
+            <path d="M423 132 L452 132 L449 154 L436 160 L420 154 Z" fill="#526057" stroke="#293a31" stroke-width="4" stroke-linejoin="round"/>
+            <path d="M440 126 L452 129 L458 139 L470 142 L471 148 L462 150 L452 144 L440 143 Z" fill="#77827a" stroke="#293a31" stroke-width="3" stroke-linejoin="round"/>
+            <path d="M390 136 Q383 148 391 159 L412 164" fill="none" stroke="#293a31" stroke-width="4" stroke-linejoin="round"/>
+          </g>
+          <g data-part="sights" class="outer-part" fill="none" stroke="#34443a" stroke-width="6" stroke-linejoin="round">
+            <path d="M351 82 L354 65 L376 65 L379 82"/>
+            <path d="M718 80 L719 66 L733 66 L734 80"/>
+          </g>
+          <path d="M52 169 L770 169" stroke="#69766d" stroke-width="2" stroke-dasharray="5 8" opacity=".5"/>
+        </svg>
+        <div class="exhibit-controls">
+          <div class="view-switch" role="group" aria-label="Choose illustration view">
+            <button class="view-button" type="button" data-view-choice="exterior" aria-pressed="false">Exterior</button>
+            <button class="view-button" type="button" data-view-choice="transparent" aria-pressed="true">Transparent</button>
+          </div>
+          <span class="art-label">Illustrative · not to scale</span>
+        </div>
+        <div class="part-controls" role="group" aria-label="Select a component to highlight">
+          <button class="part-button" type="button" data-part-choice="stock" aria-pressed="false">Stock</button>
+          <button class="part-button" type="button" data-part-choice="barrel" aria-pressed="false">Barrel</button>
+          <button class="part-button" type="button" data-part-choice="receiver" aria-pressed="false">Receiver</button>
+          <button class="part-button" type="button" data-part-choice="magazine" aria-pressed="false">Magazine</button>
+          <button class="part-button" type="button" data-part-choice="sights" aria-pressed="false">Sights</button>
+        </div>
+        <p class="part-description" aria-live="polite"><strong>Explore the illustration.</strong> Choose a component to read a short historical note.</p>
+      </div>
+    </section>
+
+    <section class="shell stats" aria-label="Collection overview">
+      <div class="stat"><strong>1914—now</strong><span>A century-plus of change</span></div>
+      <div class="stat"><strong>Across eras</strong><span>Technology in historical context</span></div>
+      <div class="stat"><strong>Curated</strong><span>Built around reliable sources</span></div>
+    </section>
+
+    <section class="shell collection" id="collection" aria-labelledby="collection-title">
+      <div class="section-head">
+        <div>
+          <span class="eyebrow">Browse the collection</span>
+          <h2 id="collection-title">A century in objects</h2>
+        </div>
+        <p>Start with a period or search for a familiar name. Each entry is a doorway into its wider historical moment.</p>
+      </div>
+      <div class="filters">
+        <div class="filter-list" role="group" aria-label="Filter by historical period">
+          <button class="filter" type="button" data-filter="all" aria-pressed="true">All periods</button>
+          <button class="filter" type="button" data-filter="wwi" aria-pressed="false">1914–1918</button>
+          <button class="filter" type="button" data-filter="wwii" aria-pressed="false">1939–1945</button>
+          <button class="filter" type="button" data-filter="coldwar" aria-pressed="false">Cold War</button>
+          <button class="filter" type="button" data-filter="modern" aria-pressed="false">1991–today</button>
+        </div>
+        <label class="search-wrap">
+          <span class="sr-only" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0">Search historical firearms</span>
+          <input class="search" type="search" placeholder="Search the collection…" autocomplete="off">
+        </label>
+      </div>
+      <div class="cards" aria-live="polite">
+        <article class="card" data-period="wwi" data-search="lee enfield no 1 mk iii british 1907 bolt action first world war">
+          <div class="card-image"><span class="card-no">01 / 08</span><svg class="weapon-art" viewBox="0 0 800 230" role="img" aria-label="Simplified side profile of a Lee–Enfield Mk III rifle"><path class="weapon-wood" d="M55 77 L167 77 L194 91 L421 92 L433 112 L418 133 L193 138 L164 153 L82 152 L56 139 Z"/><path class="weapon-metal" d="M420 84 L481 80 L492 112 L480 132 L420 129 Z"/><path class="weapon-metal" d="M486 87 L756 87 L772 93 L756 101 L488 101 Z"/><path class="weapon-metal" d="M435 128 L478 132 L473 169 Q466 176 451 170 L435 161 Z"/><path class="weapon-detail" d="M448 128 Q435 144 445 155 L463 159 M463 84 L466 67 L482 67 L484 82 M731 88 L733 72 L747 72 L749 88"/><path class="weapon-highlight" d="M83 91 L159 91 L188 103 L403 104 M497 94 L751 94"/></svg><span class="period">First World War</span></div>
+          <div class="card-body"><div class="card-meta"><span>United Kingdom</span><span>1907</span></div><h3>Lee–Enfield Mk III</h3><p>A long-serving service rifle whose story begins before 1914.</p><details class="history"><summary>History &amp; source</summary><p>Adopted in 1907, the Short Magazine Lee–Enfield Mk III entered service before the First World War. It served British and Commonwealth forces through both world wars and remained in use in many places after 1945.</p><a class="history-source" href="https://en.wikipedia.org/wiki/Lee%E2%80%93Enfield" target="_blank" rel="noopener noreferrer">Read the historical overview ↗</a></details></div>
+        </article>
+        <article class="card" data-period="wwi" data-search="mp 18 germany 1918 submachine gun first world war">
+          <div class="card-image"><span class="card-no">02 / 08</span><svg class="weapon-art" viewBox="0 0 800 230" role="img" aria-label="Simplified side profile of a Bergmann MP 18"><path class="weapon-wood" d="M70 84 L275 84 L307 97 L320 117 L302 139 L112 143 L81 132 Z"/><path class="weapon-metal" d="M292 91 L485 89 L502 100 L499 126 L479 136 L306 132 Z"/><path class="weapon-metal" d="M488 101 L745 101 L762 107 L745 114 L488 114 Z"/><path class="weapon-metal" d="M415 131 Q439 126 453 141 L449 190 Q432 199 416 186 Z"/><path class="weapon-detail" d="M322 102 L471 102 M344 91 L344 76 L373 76 L373 91 M479 91 L479 82 L496 82 M439 132 L436 151"/><path class="weapon-highlight" d="M91 96 L270 96 M510 106 L744 106"/></svg><span class="period">First World War</span></div>
+          <div class="card-body"><div class="card-meta"><span>German Empire</span><span>1918</span></div><h3>MP 18</h3><p>An early example of a new class of compact military firearm.</p><details class="history"><summary>History &amp; source</summary><p>Developed near the end of the First World War, the Bergmann MP 18 entered German service in 1918. It is widely remembered as one of the first submachine guns used in combat, appearing during the war’s final year.</p><a class="history-source" href="https://en.wikipedia.org/wiki/MP_18" target="_blank" rel="noopener noreferrer">Read the historical overview ↗</a></details></div>
+        </article>
+        <article class="card" data-period="wwii" data-search="m1 garand united states 1936 second world war rifle">
+          <div class="card-image"><span class="card-no">03 / 08</span><svg class="weapon-art" viewBox="0 0 800 230" role="img" aria-label="Simplified side profile of an M1 Garand"><path class="weapon-wood" d="M54 79 L356 79 L385 88 L423 88 L434 104 L423 125 L386 130 L363 144 L179 146 L151 158 L82 155 L56 139 Z"/><path class="weapon-metal" d="M377 84 L499 83 L515 96 L512 124 L493 136 L410 132 L389 125 Z"/><path class="weapon-metal" d="M496 91 L751 91 L768 97 L751 104 L497 104 Z"/><path class="weapon-metal" d="M397 127 L497 130 L488 145 L412 143 Z"/><path class="weapon-detail" d="M423 134 Q414 149 425 160 L455 161 L468 146 M455 83 L457 69 L479 69 L481 84 M727 92 L729 76 L746 76 L748 92 M390 111 L493 111"/><path class="weapon-highlight" d="M81 94 L350 94 M519 97 L747 97"/></svg><span class="period">Second World War</span></div>
+          <div class="card-body"><div class="card-meta"><span>United States</span><span>1936</span></div><h3>M1 Garand</h3><p>A landmark in the U.S. Army's transition to a semi-automatic service rifle.</p><details class="history"><summary>History &amp; source</summary><p>Designed by John Garand at Springfield Armory and adopted by the U.S. Army in 1936, the M1 became its standard service rifle in the Second World War. It continued in U.S. service during the Korean War.</p><a class="history-source" href="https://en.wikipedia.org/wiki/M1_Garand" target="_blank" rel="noopener noreferrer">Read the historical overview ↗</a></details></div>
+        </article>
+        <article class="card" data-period="wwii" data-search="stg 44 germany 1944 second world war assault rifle">
+          <div class="card-image"><span class="card-no">04 / 08</span><svg class="weapon-art" viewBox="0 0 800 230" role="img" aria-label="Simplified side profile of a StG 44"><path class="weapon-wood" d="M67 80 L297 80 L326 92 L338 112 L321 131 L111 135 L79 126 Z"/><path class="weapon-metal" d="M307 87 L485 80 L516 94 L519 119 L496 132 L327 129 L311 116 Z"/><path class="weapon-metal" d="M499 91 L733 82 L754 88 L754 98 L514 108 Z"/><path class="weapon-metal" d="M411 127 L454 131 L448 192 Q436 201 423 191 Z"/><path class="weapon-metal" d="M450 128 Q476 130 478 146 L466 188 Q457 197 442 192 L449 161 Z"/><path class="weapon-detail" d="M337 95 L486 91 M355 83 L356 68 L376 67 L378 82 M716 83 L718 70 L735 70 M430 130 L428 147"/><path class="weapon-highlight" d="M90 94 L295 94 M529 94 L724 88"/></svg><span class="period">Second World War</span></div>
+          <div class="card-body"><div class="card-meta"><span>Germany</span><span>1944</span></div><h3>StG 44</h3><p>A late-war design often discussed in the history of modern service rifles.</p><details class="history"><summary>History &amp; source</summary><p>Developed in Germany during the Second World War, the design appeared in service as the MP 43 and MP 44 before being standardized as the StG 44 in 1944. It saw combat late in the war and is often studied as an important step in the development of the modern assault rifle.</p><a class="history-source" href="https://en.wikipedia.org/wiki/StG_44" target="_blank" rel="noopener noreferrer">Read the historical overview ↗</a></details></div>
+        </article>
+        <article class="card" data-period="coldwar" data-search="ak 47 soviet union 1949 cold war rifle">
+          <div class="card-image"><span class="card-no">05 / 08</span><svg class="weapon-art" viewBox="0 0 800 230" role="img" aria-label="Simplified side profile of an early AK rifle"><path class="weapon-wood" d="M57 81 L285 81 L313 92 L337 95 L342 118 L325 134 L109 139 L77 129 Z"/><path class="weapon-wood" d="M311 79 L486 80 L493 96 L319 101 Z"/><path class="weapon-metal" d="M309 94 L497 91 L512 105 L504 127 L481 137 L326 132 L310 119 Z"/><path class="weapon-metal" d="M493 91 L743 91 L760 97 L743 104 L495 104 Z"/><path class="weapon-metal" d="M423 131 L464 132 L458 190 Q449 198 435 192 Z"/><path class="weapon-metal" d="M449 131 Q474 132 479 148 L469 196 Q460 203 445 197 L452 162 Z"/><path class="weapon-detail" d="M330 103 L490 102 M342 94 L343 81 M720 91 L722 73 L739 73 L741 91"/><path class="weapon-highlight" d="M80 95 L278 95 M518 97 L737 97"/></svg><span class="period">Cold War</span></div>
+          <div class="card-body"><div class="card-meta"><span>Soviet Union</span><span>1949</span></div><h3>AK-47</h3><p>A family of rifles whose global spread reflects the geopolitics of the Cold War.</p><details class="history"><summary>History &amp; source</summary><p>Designed in the Soviet Union by Mikhail Kalashnikov in the late 1940s, the AK was adopted by Soviet forces in 1949. Production and distribution across many countries during the Cold War made it one of the most widely recognized firearm designs in modern history.</p><a class="history-source" href="https://en.wikipedia.org/wiki/AK-47" target="_blank" rel="noopener noreferrer">Read the historical overview ↗</a></details></div>
+        </article>
+        <article class="card" data-period="coldwar" data-search="m16 united states 1964 cold war rifle">
+          <div class="card-image"><span class="card-no">06 / 08</span><svg class="weapon-art" viewBox="0 0 800 230" role="img" aria-label="Simplified side profile of an early M16 rifle"><path class="weapon-wood" d="M63 85 L204 85 L226 92 L231 124 L213 135 L94 137 L67 125 Z" style="fill:#58645c;stroke:#2c3932"/><path class="weapon-metal" d="M223 88 L445 88 L458 102 L452 123 L230 125 Z"/><path class="weapon-metal" d="M445 96 L746 96 L762 102 L746 110 L447 110 Z"/><path class="weapon-metal" d="M355 126 L390 128 L386 186 Q377 194 365 188 Z"/><path class="weapon-metal" d="M401 124 L444 128 L439 153 Q429 163 407 154 Z"/><path class="weapon-detail" d="M231 95 L420 95 M238 104 L420 104 M237 113 L418 113 M415 86 L417 73 L454 73 L458 89 M718 96 L720 77 L739 77 L741 96 M412 133 L415 164"/><path class="weapon-highlight" d="M239 91 L430 91 M463 102 L739 102"/></svg><span class="period">Cold War</span></div>
+          <div class="card-body"><div class="card-meta"><span>United States</span><span>1964</span></div><h3>M16</h3><p>A design that became closely associated with U.S. military history in Vietnam.</p><details class="history"><summary>History &amp; source</summary><p>Developed from the ArmaLite AR-15 design, the M16 entered U.S. military service in 1964. Its adoption and early use during the Vietnam War made it a defining part of the history of American forces in that conflict; later versions continued in service for decades.</p><a class="history-source" href="https://en.wikipedia.org/wiki/M16_rifle" target="_blank" rel="noopener noreferrer">Read the historical overview ↗</a></details></div>
+        </article>
+        <article class="card" data-period="modern" data-search="ak 74 soviet union 1974 modern rifle">
+          <div class="card-image"><span class="card-no">07 / 08</span><svg class="weapon-art" viewBox="0 0 800 230" role="img" aria-label="Simplified side profile of an AK-74"><path class="weapon-wood" d="M57 81 L285 81 L313 92 L337 95 L342 118 L325 134 L109 139 L77 129 Z"/><path class="weapon-wood" d="M311 79 L486 80 L493 96 L319 101 Z"/><path class="weapon-metal" d="M309 94 L497 91 L512 105 L504 127 L481 137 L326 132 L310 119 Z"/><path class="weapon-metal" d="M493 91 L727 91 L744 97 L727 104 L495 104 Z"/><path class="weapon-metal" d="M727 87 L768 84 L771 108 L727 105 Z"/><path class="weapon-metal" d="M423 131 L464 132 L458 190 Q449 198 435 192 Z"/><path class="weapon-metal" d="M449 131 Q474 132 479 148 L469 196 Q460 203 445 197 L452 162 Z"/><path class="weapon-detail" d="M330 103 L490 102 M342 94 L343 81 M720 91 L722 73 L739 73 L741 91"/><path class="weapon-highlight" d="M80 95 L278 95 M518 97 L722 97"/></svg><span class="period">Late 20th century</span></div>
+          <div class="card-body"><div class="card-meta"><span>Soviet Union</span><span>1974</span></div><h3>AK-74</h3><p>A later development in the AK family, adopted during the Soviet era.</p><details class="history"><summary>History &amp; source</summary><p>Introduced in 1974, the AK-74 was a Soviet-era successor within the Kalashnikov rifle family. It served Soviet forces during the late Cold War and remained in use across several countries after the Soviet Union dissolved.</p><a class="history-source" href="https://en.wikipedia.org/wiki/AK-74" target="_blank" rel="noopener noreferrer">Read the historical overview ↗</a></details></div>
+        </article>
+        <article class="card" data-period="modern" data-search="ak 12 russia 2018 modern rifle ukraine war">
+          <div class="card-image"><span class="card-no">08 / 08</span><svg class="weapon-art" viewBox="0 0 800 230" role="img" aria-label="Simplified side profile of an AK-12"><path class="weapon-metal" d="M57 82 L273 82 L307 94 L331 95 L338 118 L322 135 L106 140 L76 129 Z"/><path class="weapon-metal" d="M302 81 L483 81 L493 97 L318 103 Z"/><path class="weapon-metal" d="M308 95 L500 91 L516 104 L506 128 L482 138 L326 133 L309 119 Z"/><path class="weapon-metal" d="M495 91 L728 91 L745 97 L728 104 L496 104 Z"/><path class="weapon-metal" d="M726 86 L769 84 L772 108 L727 105 Z"/><path class="weapon-metal" d="M421 132 L463 134 L456 190 Q447 198 433 192 Z"/><path class="weapon-metal" d="M449 131 Q474 132 479 148 L468 194 Q459 203 444 196 L452 160 Z"/><path class="weapon-detail" d="M319 89 L484 89 M330 100 L490 100 M346 81 L346 70 L481 70 L483 82 M719 91 L721 75 L740 75 L742 91"/><path class="weapon-highlight" d="M82 96 L268 96 M520 97 L720 97"/></svg><span class="period">21st century</span></div>
+          <div class="card-body"><div class="card-meta"><span>Russian Federation</span><span>2018</span></div><h3>AK-12</h3><p>A contemporary Russian service rifle, set within a changing military landscape.</p><details class="history"><summary>History &amp; source</summary><p>Developed in the 2010s as a modern Russian service-rifle program, the AK-12 was adopted in 2018. Variants have since been documented in Russian service, including during the full-scale invasion of Ukraine; equipment reports should be dated because configurations have changed.</p><a class="history-source" href="https://en.wikipedia.org/wiki/AK-12" target="_blank" rel="noopener noreferrer">Read the historical overview ↗</a></details></div>
+        </article>
+      </div>
+      <p class="no-results" role="status">No entries match. Try another period or search term.</p>
+    </section>
+
+    <section class="timeline-band" id="timeline" aria-labelledby="timeline-title">
+      <div class="shell timeline-inner">
+        <div>
+          <span class="eyebrow">A changing century</span>
+          <h2 id="timeline-title">Follow the story through time.</h2>
+          <p>Weapons do not exist in isolation. Follow the conflicts, people and decisions that shaped each era.</p>
+        </div>
+        <div class="timeline" aria-label="Historical periods">
+          <div class="timepoint"><strong>1914</strong><span>First World War begins</span></div>
+          <div class="timepoint"><strong>1939</strong><span>Second World War begins</span></div>
+          <div class="timepoint"><strong>1947</strong><span>Cold War era takes shape</span></div>
+          <div class="timepoint"><strong>1991</strong><span>End of the Soviet Union</span></div>
+          <div class="timepoint"><strong>2014+</strong><span>War in Ukraine</span></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="shell footer" id="about">
+    <div><strong>ARMS & ERAS</strong> · A history project</div>
+    <div class="notice">Educational history only. Entries should be supported by reputable sources; this prototype does not provide operational or weapon-use instructions.</div>
+  </footer>
+
+  <script>
+    const filters = [...document.querySelectorAll(".filter")];
+    const cards = [...document.querySelectorAll(".card")];
+    const search = document.querySelector(".search");
+    const noResults = document.querySelector(".no-results");
+    let activePeriod = "all";
+    const exhibit = document.querySelector(".hero-art");
+    const viewButtons = [...document.querySelectorAll(".view-button")];
+    const partButtons = [...document.querySelectorAll(".part-button")];
+    const partDescription = document.querySelector(".part-description");
+    const partNotes = {
+      stock: "Stock — Often shaped by the materials, manufacturing methods and design traditions of its time.",
+      barrel: "Barrel — Its length and finish are visible design features that historians use to compare models.",
+      receiver: "Receiver — The metal housing is a defining exterior feature; this illustration does not show a working internal mechanism.",
+      magazine: "Magazine — Its position and visible shape differ between historical models.",
+      sights: "Sights — A visible feature that changed in form across different eras and models."
+    };
+
+    for (const button of viewButtons) {
+      button.addEventListener("click", () => {
+        const view = button.dataset.viewChoice;
+        exhibit.dataset.view = view;
+        for (const viewButton of viewButtons) {
+          viewButton.setAttribute("aria-pressed", String(viewButton === button));
+        }
+      });
+    }
+
+    for (const button of partButtons) {
+      button.addEventListener("click", () => {
+        const selectedPart = button.dataset.partChoice;
+        for (const partButton of partButtons) {
+          partButton.setAttribute("aria-pressed", String(partButton === button));
+        }
+        for (const part of exhibit.querySelectorAll(".artifact [data-part]")) {
+          part.classList.toggle("part-selected", part.dataset.part === selectedPart);
+        }
+        const [name, note] = partNotes[selectedPart].split(" — ");
+        partDescription.replaceChildren();
+        const label = document.createElement("strong");
+        label.textContent = `${name} — `;
+        partDescription.append(label, document.createTextNode(note));
+      });
+    }
+
+    function updateCollection() {
+      const term = search.value.trim().toLowerCase();
+      let visibleCount = 0;
+      for (const card of cards) {
+        const matchesPeriod = activePeriod === "all" || card.dataset.period === activePeriod;
+        const matchesSearch = !term || card.dataset.search.includes(term);
+        card.hidden = !(matchesPeriod && matchesSearch);
+        if (!card.hidden) visibleCount += 1;
+      }
+      noResults.style.display = visibleCount ? "none" : "block";
+    }
+
+    for (const button of filters) {
+      button.addEventListener("click", () => {
+        activePeriod = button.dataset.filter;
+        for (const filter of filters) {
+          filter.setAttribute("aria-pressed", String(filter === button));
+        }
+        updateCollection();
+      });
+    }
+    search.addEventListener("input", updateCollection);
+  </script>
+</body>
+</html>
